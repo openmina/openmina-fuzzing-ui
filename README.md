@@ -13,26 +13,17 @@ The application is available at [http://1.k8.openmina.com:31308](http://1.k8.ope
 1. **Install Node.js:** First, you need to install Node.js v18 on your computer.
    #### Windows ####
    * For Windows, you can download the Node.js v18 installer from here: https://nodejs.org/dist/v18.16.0/node-v18.16.0-x64.msi and then follow the installation instructions.
-     1. Open the installer file
-     2. Click `Next`
-     3. Accept the license agreement
-     4. Click `Next`
-     5. Click `Next`
-     6. Click `Next`
-     7. Click `Install`
-     8. Click `Finish`
-     9. Verify that Node.js is installed by checking the version in a terminal: `node -v`
    #### Linux ####
    * For Linux, you can use the following commands to install Node.js v18 on Ubuntu:
      1. Update the package manager: `sudo apt update` (for Ubuntu/Debian-based distros)
      2. Install the curl package if it's not already installed: `sudo apt install curl`
-     3. Download the Node.js setup script using curl: `curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -, replacing X.x with the version number you want to install. For example, to install Node.js 14.x, you would run: curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+     3. Download the Node.js setup script using curl: `curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -`
      4. Install Node.js using the package manager: `sudo apt-get install -y nodejs`
      5. Verify that Node.js is installed by checking the version in a terminal: `node -v`
     #### Mac ####
    * For Mac, you can use the following commands to install Node.js v18:
      1. Install Homebrew: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
-     2. Install Node.js: `brew install node@18`
+     2. Install Node.js v18: `brew install node@18`
      3. Verify that Node.js is installed by checking the version in a terminal: `node -v`
 
 2. **Install Angular CLI:** Once you have Node.js installed, open a command prompt or terminal window and run the following command to install the Angular CLI:
