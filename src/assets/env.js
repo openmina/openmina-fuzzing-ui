@@ -1,6 +1,6 @@
 (function (window) {
   window['env'] = {
     production: true,
-    identifier: 'Open mina Fuzzing',
+    identifier: 'Open Mina Fuzzing',
   };
 })(this);

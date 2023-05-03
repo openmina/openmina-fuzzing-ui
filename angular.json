@@ -98,6 +98,10 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "poll": 1000,
+            "liveReload": true
+          },
           "configurations": {
             "production": {
               "browserTarget": "openmina-fuzzing-ui:build:production"
@@ -123,7 +127,6 @@
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
               "src/assets"
             ],
             "styles": [

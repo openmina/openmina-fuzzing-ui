@@ -48,7 +48,8 @@
         "src/app/layout/error-preview/*"
       ]
     },
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "watch": true,
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
