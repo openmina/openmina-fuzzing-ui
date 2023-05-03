@@ -35,8 +35,6 @@ The application is available at [http://1.k8.openmina.com:31308](http://1.k8.ope
      2. Install Node.js: `brew install node@18`
      3. Verify that Node.js is installed by checking the version in a terminal: `node -v`
 
-Verify that Node.js is installed by checking the version: node -v
-
 2. **Install Angular CLI:** Once you have Node.js installed, open a command prompt or terminal window and run the following command to install the Angular CLI:
    `npm install -g @angular/cli@15.0.0`.
    This command will install the version 15 of the Angular CLI globally on your computer.
