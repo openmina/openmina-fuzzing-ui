@@ -19,6 +19,7 @@ import { NgrxRouterStoreModule } from '@shared/router/ngrx-router.module';
 import { CONFIG } from '@shared/constants/config';
 import { GlobalErrorHandlerService } from '@core/services/global-error-handler.service';
 import { SubmenuTabsComponent } from '@app/layout/submenu-tabs/submenu-tabs.component';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 @Injectable()
 export class AppGlobalErrorhandler implements ErrorHandler {
@@ -58,6 +59,7 @@ export class AppGlobalErrorhandler implements ErrorHandler {
     EagerSharedModule,
   ],
   providers: [
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
     THEME_PROVIDER,
     { provide: ErrorHandler, useClass: AppGlobalErrorhandler, deps: [GlobalErrorHandlerService] },
     { provide: LOCALE_ID, useValue: 'en' },
