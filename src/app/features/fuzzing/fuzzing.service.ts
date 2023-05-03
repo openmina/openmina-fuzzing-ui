@@ -1,35 +1,31 @@
 import { Injectable } from '@angular/core';
-import { delay, finalize, map, Observable } from 'rxjs';
+import { delay, map, Observable } from 'rxjs';
 import { FuzzingFile } from '@shared/types/fuzzing/fuzzing-file.type';
 import { HttpClient } from '@angular/common/http';
 import { FuzzingFileDetails } from '@shared/types/fuzzing/fuzzing-file-details.type';
 import { FuzzingLineCounter } from '@shared/types/fuzzing/fuzzing-line-counter.type';
-import { LoadingService } from '@core/services/loading.service';
+import { CONFIG } from '@shared/constants/config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FuzzingService {
 
-  constructor(private http: HttpClient,
-              private loadingService: LoadingService) { }
+  constructor(private http: HttpClient) { }
 
   getFiles(type: 'ocaml' | 'rust'): Observable<FuzzingFile[]> {
-    this.loadingService.addURL();
-    return this.http.get<any[]>('assets/reports/' + type + 'index.json').pipe(delay(100))
+    return this.http.get<any[]>(`${CONFIG.server}/${type}index.json?path=${CONFIG.filesAbsolutePath}`).pipe(delay(100))
       .pipe(
         map((files: any[]) => files.map((file: any) => ({
           name: file[0],
           coverage: file[1],
           path: file[2],
         }))),
-        finalize(() => this.loadingService.removeURL()),
       );
   }
 
   getFileDetails(name: string): Observable<FuzzingFileDetails> {
-    this.loadingService.addURL();
-    return this.http.get<any>(`assets/reports/${name}`).pipe(delay(100))
+    return this.http.get<any>(`${CONFIG.server}/${name}?path=${CONFIG.filesAbsolutePath}`).pipe(delay(100))
       .pipe(
         map((file: any) => ({
           filename: file.filename,
@@ -49,7 +45,6 @@ export class FuzzingService {
             };
           }),
         } as FuzzingFileDetails)),
-        finalize(() => this.loadingService.removeURL()),
       );
   }
 

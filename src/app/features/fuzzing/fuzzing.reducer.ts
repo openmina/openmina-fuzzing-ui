@@ -37,6 +37,9 @@ export function reducer(state: FuzzingState = initialState, action: FuzzingActio
 
     case FUZZING_GET_FILES_SUCCESS: {
       const files = sortFiles(action.payload, state.sort);
+      if (JSON.stringify(files) === JSON.stringify(state.files)) {
+        return state;
+      }
       return {
         ...state,
         files,
@@ -52,8 +55,12 @@ export function reducer(state: FuzzingState = initialState, action: FuzzingActio
     }
 
     case FUZZING_GET_FILE_DETAILS_SUCCESS: {
+      if (JSON.stringify(action.payload) === JSON.stringify(state.activeFileDetails)) {
+        return state;
+      }
       return {
         ...state,
+        activeFile: { ...state.activeFile },
         activeFileDetails: action.payload,
       };
     }

@@ -6,11 +6,12 @@ import { Router } from '@angular/router';
 import { FuzzingFile } from '@shared/types/fuzzing/fuzzing-file.type';
 import { selectFuzzingActiveFile, selectFuzzingFiles, selectFuzzingFilesSorting, selectFuzzingUrlType } from '@fuzzing/fuzzing.state';
 import { FuzzingGetFileDetails, FuzzingSort } from '@fuzzing/fuzzing.actions';
-import { filter, take } from 'rxjs';
+import { filter, take, timer } from 'rxjs';
 import { Routes } from '@shared/enums/routes.enum';
 import { getMergedRoute } from '@shared/router/router-state.selectors';
 import { MergedRoute } from '@shared/router/merged-route';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { untilDestroyed } from '@ngneat/until-destroy';
 
 @Component({
   selector: 'mina-fuzzing-table',
@@ -44,6 +45,14 @@ export class FuzzingTableComponent extends StoreDispatcher implements OnInit {
     this.listenToFiles();
     this.listenToActiveFile();
     this.listenToRouteType();
+
+    timer(0, 5000)
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        if (this.activeFile) {
+          this.dispatch(FuzzingGetFileDetails, this.activeFile);
+        }
+      });
   }
 
   private listenToRouteChange(): void {

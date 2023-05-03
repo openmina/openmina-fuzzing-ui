@@ -9,8 +9,9 @@ import { AppChangeSubMenus } from '@app/app.actions';
 import { Routes } from '@shared/enums/routes.enum';
 import { getMergedRoute } from '@shared/router/router-state.selectors';
 import { MergedRoute } from '@shared/router/merged-route';
-import { take } from 'rxjs';
+import { take, timer } from 'rxjs';
 import { removeParamsFromURL } from '@shared/helpers/router.helper';
+import { untilDestroyed } from '@ngneat/until-destroy';
 
 @Component({
   selector: 'mina-fuzzing',
@@ -30,7 +31,11 @@ export class FuzzingComponent extends StoreDispatcher implements OnInit {
   private listenToRouteChange(): void {
     this.select(getMergedRoute, (route: MergedRoute) => {
       const urlType = removeParamsFromURL(route.url).split('/')[2] as 'ocaml' | 'rust';
-      this.dispatch(FuzzingGetFiles, { urlType });
+      timer(0, 5000)
+        .pipe(untilDestroyed(this))
+        .subscribe(() => {
+          this.dispatch(FuzzingGetFiles, { urlType });
+        });
     }, take(1));
   }
 
