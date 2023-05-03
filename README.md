@@ -18,7 +18,7 @@ The application is available at [http://1.k8.openmina.com:31308](http://1.k8.ope
      1. Update the package manager: `sudo apt update` (for Ubuntu/Debian-based distros)
      2. Install the curl package if it's not already installed: `sudo apt install curl`
      3. Download the Node.js setup script using curl: `curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -`
-     4. Install Node.js using the package manager: `sudo apt-get install -y nodejs`
+     4. Install Node.js using the package manager: `sudo apt-get install -y nodejs=18.*`
      5. Verify that Node.js is installed by checking the version in a terminal: `node -v`
     #### Mac ####
    * For Mac, you can use the following commands to install Node.js v18:
