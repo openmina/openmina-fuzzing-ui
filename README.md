@@ -6,7 +6,7 @@ The application is available at [http://1.k8.openmina.com:31308](http://1.k8.ope
 
 # Table of Contents
 1. [How to run it on your machine](#how-to-run-it-on-your-machine)
-2. [How to use your own files](#how-to-use your own files)
+2. [How to use your own files](#how-to-use-your-own-files)
 
 ## How to run it on your machine
 
