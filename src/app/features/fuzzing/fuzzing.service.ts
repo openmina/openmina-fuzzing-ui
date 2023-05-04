@@ -15,11 +15,11 @@ export class FuzzingService {
     if (CONFIG.server.includes(origin)) {
       return of(['reports']).pipe(delay(100));
     }
-    return this.http.get<string[]>(`${CONFIG.server}?path=${CONFIG.parentDirectoryAbsolutePath}`).pipe(delay(100));
+    return this.http.get<string[]>(`${CONFIG.server}?path=${encodeURIComponent(CONFIG.parentDirectoryAbsolutePath)}`).pipe(delay(100));
   }
 
   getFiles(activeDir: string, type: 'ocaml' | 'rust'): Observable<FuzzingFile[]> {
-    return this.http.get<any[]>(`${CONFIG.server}/${type}index.json?path=${CONFIG.parentDirectoryAbsolutePath}/${activeDir}`).pipe(delay(100))
+    return this.http.get<any[]>(`${CONFIG.server}/${type}index.json?path=${encodeURIComponent(CONFIG.parentDirectoryAbsolutePath + '/' + activeDir)}`).pipe(delay(100))
       .pipe(
         map((files: any[]) => files.map((file: any) => ({
           name: file[0],
@@ -30,7 +30,7 @@ export class FuzzingService {
   }
 
   getFileDetails(activeDir: string, name: string): Observable<FuzzingFileDetails> {
-    return this.http.get<any>(`${CONFIG.server}/${name}?path=${CONFIG.parentDirectoryAbsolutePath}/${activeDir}`).pipe(delay(100))
+    return this.http.get<any>(`${CONFIG.server}/${name}?path=${encodeURIComponent(CONFIG.parentDirectoryAbsolutePath + '/' + activeDir)}`).pipe(delay(100))
       .pipe(
         map((file: any) => ({
           filename: file.filename,
