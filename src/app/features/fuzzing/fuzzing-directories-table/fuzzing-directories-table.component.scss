@@ -1,0 +1,17 @@
+@import 'variables';
+
+.mina-table {
+	.row {
+		grid-template-columns: 1fr;
+		color: $base-secondary;
+
+		&:not(.head) {
+			cursor: pointer;
+		}
+	}
+
+	.cdk-virtual-scroll-viewport {
+		min-width: 100%;
+		overflow-x: hidden;
+	}
+}

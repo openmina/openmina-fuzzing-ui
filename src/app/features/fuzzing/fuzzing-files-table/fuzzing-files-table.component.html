@@ -15,8 +15,7 @@
                                [itemSize]="itemSize">
     <div *cdkVirtualFor="let file of files; let i=index"
          (click)="onRowClick(file)"
-         [class.active]="activeFile === file"
-         [class.row-even]="i % 2 === 0"
+         [class.active]="activeFile?.path === file.path"
          class="row">
       <span class="fx-row-vert-cent f-600 flex-between pr-10">
         <span class="border-rad-4 mr-5">

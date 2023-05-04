@@ -6,15 +6,17 @@ import { FuzzingFileDetails } from '@shared/types/fuzzing/fuzzing-file-details.t
 import { FuzzingLineCounter } from '@shared/types/fuzzing/fuzzing-line-counter.type';
 import { CONFIG } from '@shared/constants/config';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class FuzzingService {
 
   constructor(private http: HttpClient) { }
 
-  getFiles(type: 'ocaml' | 'rust'): Observable<FuzzingFile[]> {
-    return this.http.get<any[]>(`${CONFIG.server}/${type}index.json?path=${CONFIG.filesAbsolutePath}`).pipe(delay(100))
+  getRootDirectoryContent(): Observable<string[]> {
+    return this.http.get<string[]>(`${CONFIG.server}?path=${CONFIG.filesAbsolutePath}`).pipe(delay(100));
+  }
+
+  getFiles(activeDir: string, type: 'ocaml' | 'rust'): Observable<FuzzingFile[]> {
+    return this.http.get<any[]>(`${CONFIG.server}/${type}index.json?path=${CONFIG.filesAbsolutePath}\\${activeDir}`).pipe(delay(100))
       .pipe(
         map((files: any[]) => files.map((file: any) => ({
           name: file[0],
@@ -24,8 +26,8 @@ export class FuzzingService {
       );
   }
 
-  getFileDetails(name: string): Observable<FuzzingFileDetails> {
-    return this.http.get<any>(`${CONFIG.server}/${name}?path=${CONFIG.filesAbsolutePath}`).pipe(delay(100))
+  getFileDetails(activeDir: string, name: string): Observable<FuzzingFileDetails> {
+    return this.http.get<any>(`${CONFIG.server}/${name}?path=${CONFIG.filesAbsolutePath}\\${activeDir}`).pipe(delay(100))
       .pipe(
         map((file: any) => ({
           filename: file.filename,

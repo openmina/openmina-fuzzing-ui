@@ -4,7 +4,13 @@ import { TableHeadSorting } from '@shared/types/shared/table-head-sorting.type';
 import { SortDirection, TableSort } from '@shared/types/shared/table-sort.type';
 import { Router } from '@angular/router';
 import { FuzzingFile } from '@shared/types/fuzzing/fuzzing-file.type';
-import { selectFuzzingActiveFile, selectFuzzingFiles, selectFuzzingFilesSorting, selectFuzzingUrlType } from '@fuzzing/fuzzing.state';
+import {
+  selectFuzzingActiveDirectory,
+  selectFuzzingActiveFile,
+  selectFuzzingFiles,
+  selectFuzzingFilesSorting,
+  selectFuzzingUrlType,
+} from '@fuzzing/fuzzing.state';
 import { FuzzingGetFileDetails, FuzzingSort } from '@fuzzing/fuzzing.actions';
 import { filter, take, timer } from 'rxjs';
 import { Routes } from '@shared/enums/routes.enum';
@@ -14,13 +20,13 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { untilDestroyed } from '@ngneat/until-destroy';
 
 @Component({
-  selector: 'mina-fuzzing-table',
-  templateUrl: './fuzzing-table.component.html',
-  styleUrls: ['./fuzzing-table.component.scss'],
+  selector: 'mina-fuzzing-files-table',
+  templateUrl: './fuzzing-files-table.component.html',
+  styleUrls: ['./fuzzing-files-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'flex-column h-100' },
 })
-export class FuzzingTableComponent extends StoreDispatcher implements OnInit {
+export class FuzzingFilesTableComponent extends StoreDispatcher implements OnInit {
 
   readonly itemSize: number = 36;
 
@@ -33,9 +39,10 @@ export class FuzzingTableComponent extends StoreDispatcher implements OnInit {
   activeFile: FuzzingFile;
   currentSort: TableSort<FuzzingFile>;
 
-  @ViewChild(CdkVirtualScrollViewport, {static: true}) private scrollViewport: CdkVirtualScrollViewport;
+  @ViewChild(CdkVirtualScrollViewport, { static: true }) private scrollViewport: CdkVirtualScrollViewport;
   private pathFromRoute: string;
   private urlType: string;
+  private activeDirectory: string;
 
   constructor(private router: Router) { super(); }
 
@@ -44,6 +51,7 @@ export class FuzzingTableComponent extends StoreDispatcher implements OnInit {
     this.listenToSortingChanges();
     this.listenToFiles();
     this.listenToActiveFile();
+    this.listenToActiveDirectory();
     this.listenToRouteType();
 
     timer(0, 5000)
@@ -93,6 +101,12 @@ export class FuzzingTableComponent extends StoreDispatcher implements OnInit {
     }, filter(file => this.activeFile !== file));
   }
 
+  private listenToActiveDirectory(): void {
+    this.select(selectFuzzingActiveDirectory, (directory: string) => {
+      this.activeDirectory = directory;
+    }, filter(directory => this.activeDirectory !== directory));
+  }
+
   private listenToSortingChanges(): void {
     this.select(selectFuzzingFilesSorting, sort => {
       this.currentSort = sort;
@@ -121,6 +135,6 @@ export class FuzzingTableComponent extends StoreDispatcher implements OnInit {
       this.activeFile = file;
       this.dispatch(FuzzingGetFileDetails, file);
     }
-    this.router.navigate([Routes.FUZZING, this.urlType, file.path]);
+    this.router.navigate([Routes.FUZZING, this.urlType, this.activeDirectory, file.path]);
   }
 }

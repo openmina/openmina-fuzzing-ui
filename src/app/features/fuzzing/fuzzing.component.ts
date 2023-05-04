@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { StoreDispatcher } from '@shared/base-classes/store-dispatcher.class';
-import { FuzzingClose, FuzzingGetFiles } from '@fuzzing/fuzzing.actions';
+import { FuzzingClose, FuzzingGetDirectories, FuzzingGetFiles } from '@fuzzing/fuzzing.actions';
 import { HorizontalResizableContainerComponent } from '@shared/components/horizontal-resizable-container/horizontal-resizable-container.component';
-import { FuzzingTableComponent } from '@fuzzing/fuzzing-table/fuzzing-table.component';
-import { selectFuzzingActiveFile } from '@fuzzing/fuzzing.state';
+import { FuzzingFilesTableComponent } from '@fuzzing/fuzzing-files-table/fuzzing-files-table.component';
+import { selectFuzzingActiveDirectory, selectFuzzingActiveFile } from '@fuzzing/fuzzing.state';
 import { FuzzingFile } from '@shared/types/fuzzing/fuzzing-file.type';
 import { AppChangeSubMenus } from '@app/app.actions';
 import { Routes } from '@shared/enums/routes.enum';
 import { getMergedRoute } from '@shared/router/router-state.selectors';
 import { MergedRoute } from '@shared/router/merged-route';
-import { take, timer } from 'rxjs';
+import { filter, take, timer } from 'rxjs';
 import { removeParamsFromURL } from '@shared/helpers/router.helper';
 import { untilDestroyed } from '@ngneat/until-destroy';
 
@@ -22,10 +22,19 @@ import { untilDestroyed } from '@ngneat/until-destroy';
 })
 export class FuzzingComponent extends StoreDispatcher implements OnInit {
 
+  isActiveRow: boolean;
+
+  private removedClass: boolean;
+  private activeDirectory: string;
+
+  @ViewChild('tablesContainer') private tablesContainerRef: ElementRef<HTMLDivElement>;
+  @ViewChild(HorizontalResizableContainerComponent, { read: ElementRef }) private horizontalResizableContainer: ElementRef<HTMLElement>;
+
   ngOnInit(): void {
     this.dispatch(AppChangeSubMenus, [Routes.OCAML, Routes.RUST]);
     this.listenToRouteChange();
     this.listenToActiveRowChange();
+    this.listenToActiveDirectory();
   }
 
   private listenToRouteChange(): void {
@@ -34,25 +43,27 @@ export class FuzzingComponent extends StoreDispatcher implements OnInit {
       timer(0, 5000)
         .pipe(untilDestroyed(this))
         .subscribe(() => {
-          this.dispatch(FuzzingGetFiles, { urlType });
+          this.dispatch(FuzzingGetDirectories, { urlType });
+          if (this.activeDirectory) {
+            this.dispatch(FuzzingGetFiles);
+          }
         });
     }, take(1));
   }
 
-  isActiveRow: boolean;
-
-  private removedClass: boolean;
-
-  @ViewChild(FuzzingTableComponent, { read: ElementRef }) private tableRef: ElementRef<HTMLElement>;
-  @ViewChild(HorizontalResizableContainerComponent, { read: ElementRef }) private horizontalResizableContainer: ElementRef<HTMLElement>;
+  private listenToActiveDirectory(): void {
+    this.select(selectFuzzingActiveDirectory, (directory: string) => {
+      this.activeDirectory = directory;
+    });
+  }
 
   toggleResizing(): void {
-    this.tableRef.nativeElement.classList.toggle('no-transition');
+    this.tablesContainerRef.nativeElement.classList.toggle('no-transition');
   }
 
   onWidthChange(width: number): void {
     this.horizontalResizableContainer.nativeElement.style.right = (width * -1) + 'px';
-    this.tableRef.nativeElement.style.width = `calc(100% - ${width}px)`;
+    this.tablesContainerRef.nativeElement.style.width = `calc(100% - ${width}px)`;
   }
 
   private listenToActiveRowChange(): void {

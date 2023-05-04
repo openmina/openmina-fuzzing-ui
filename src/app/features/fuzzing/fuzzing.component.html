@@ -1,7 +1,10 @@
 <div class="flex-column h-100 w-100">
   <mina-fuzzing-toolbar></mina-fuzzing-toolbar>
   <div #parent class="h-minus-xl w-100 flex-row p-relative">
-    <mina-fuzzing-table [class.shrink]="isActiveRow"></mina-fuzzing-table>
+    <div #tablesContainer class="tables-container flex-row" [class.shrink]="isActiveRow">
+      <mina-fuzzing-directories-table></mina-fuzzing-directories-table>
+      <mina-fuzzing-files-table></mina-fuzzing-files-table>
+    </div>
     <mina-horizontal-resizable-container (endResizing)="toggleResizing()"
                                          (startResizing)="toggleResizing()"
                                          (widthChange)="onWidthChange($event)"

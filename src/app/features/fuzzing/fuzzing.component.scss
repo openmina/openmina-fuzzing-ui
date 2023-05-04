@@ -1,4 +1,4 @@
-mina-fuzzing-table {
+.tables-container {
 	transition: width 400ms cubic-bezier(0.22, 1, 0.36, 1);
 
 	&.shrink {
@@ -7,6 +7,14 @@ mina-fuzzing-table {
 
 	&:not(.shrink) {
 		width: 100% !important;
+	}
+
+	mina-fuzzing-directories-table {
+		width: 40%;
+	}
+
+	mina-fuzzing-files-table {
+		width: 60%;
 	}
 }
 

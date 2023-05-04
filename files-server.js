@@ -58,22 +58,16 @@ http.createServer((req, res) => {
   if (['GET', 'POST'].indexOf(req.method) > -1) {
     const parsedUrl = url.parse(req.url);
     if (parsedUrl.pathname === '/') {
-      let filesLink = '<ul>';
-      res.setHeader('Content-type', 'text/html');
+      let response = [];
       const filesList = fs.readdirSync(mainDirectory);
-      filesList.forEach(element => {
-        if (fs.statSync(mainDirectory + '/' + element).isFile()) {
-          filesLink += `<br/><li><a href='./${element}'>
-                    ${element}
-                </a></li>`;
-        }
-      });
+      response.push(...filesList);
 
-      filesLink += '</ul>';
-      res.end('<h1>List of files:</h1> ' + filesLink);
+      headers['Content-type'] = 'application/json';
+      res.writeHead(200, headers);
+      res.end(JSON.stringify(response));
     }
-    const sanitizePath = path.normalize(parsedUrl.pathname).replace(/^(\.\.[\/\\])+/, '');
 
+    const sanitizePath = path.normalize(parsedUrl.pathname).replace(/^(\.\.[\/\\])+/, '');
     let pathname = path.join(mainDirectory, sanitizePath);
     if (!fs.existsSync(pathname)) {
       // If the file is not found, return 404

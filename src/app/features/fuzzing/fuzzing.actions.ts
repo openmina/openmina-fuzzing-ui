@@ -6,6 +6,9 @@ import { TableSort } from '@shared/types/shared/table-sort.type';
 enum FuzzingActionTypes {
   FUZZING_INIT = 'FUZZING_INIT',
   FUZZING_CLOSE = 'FUZZING_CLOSE',
+  FUZZING_GET_DIRECTORIES = 'FUZZING_GET_DIRECTORIES',
+  FUZZING_GET_DIRECTORIES_SUCCESS = 'FUZZING_GET_DIRECTORIES_SUCCESS',
+  FUZZING_SET_ACTIVE_DIRECTORY = 'FUZZING_SET_ACTIVE_DIRECTORY',
   FUZZING_GET_FILES = 'FUZZING_GET_FILES',
   FUZZING_GET_FILES_SUCCESS = 'FUZZING_GET_FILES_SUCCESS',
   FUZZING_GET_FILE_DETAILS = 'FUZZING_GET_FILE_DETAILS',
@@ -16,6 +19,9 @@ enum FuzzingActionTypes {
 
 export const FUZZING_INIT = FuzzingActionTypes.FUZZING_INIT;
 export const FUZZING_CLOSE = FuzzingActionTypes.FUZZING_CLOSE;
+export const FUZZING_GET_DIRECTORIES = FuzzingActionTypes.FUZZING_GET_DIRECTORIES;
+export const FUZZING_GET_DIRECTORIES_SUCCESS = FuzzingActionTypes.FUZZING_GET_DIRECTORIES_SUCCESS;
+export const FUZZING_SET_ACTIVE_DIRECTORY = FuzzingActionTypes.FUZZING_SET_ACTIVE_DIRECTORY;
 export const FUZZING_GET_FILES = FuzzingActionTypes.FUZZING_GET_FILES;
 export const FUZZING_GET_FILES_SUCCESS = FuzzingActionTypes.FUZZING_GET_FILES_SUCCESS;
 export const FUZZING_GET_FILE_DETAILS = FuzzingActionTypes.FUZZING_GET_FILE_DETAILS;
@@ -33,6 +39,24 @@ export class FuzzingInit implements FuzzingAction {
 
 export class FuzzingClose implements FuzzingAction {
   readonly type = FUZZING_CLOSE;
+}
+
+export class FuzzingGetDirectories implements FuzzingAction {
+  readonly type = FUZZING_GET_DIRECTORIES;
+
+  constructor(public payload: { urlType: 'ocaml' | 'rust' }) { }
+}
+
+export class FuzzingGetDirectoriesSuccess implements FuzzingAction {
+  readonly type = FUZZING_GET_DIRECTORIES_SUCCESS;
+
+  constructor(public payload: string[]) { }
+}
+
+export class FuzzingSetActiveDirectory implements FuzzingAction {
+  readonly type = FUZZING_SET_ACTIVE_DIRECTORY;
+
+  constructor(public payload: string) { }
 }
 
 export class FuzzingGetFiles implements FuzzingAction {
@@ -71,8 +95,12 @@ export class FuzzingFilterFiles implements FuzzingAction {
   constructor(public payload: string) { }
 }
 
-export type FuzzingActions = FuzzingInit
+export type FuzzingActions =
+  | FuzzingInit
   | FuzzingClose
+  | FuzzingGetDirectories
+  | FuzzingGetDirectoriesSuccess
+  | FuzzingSetActiveDirectory
   | FuzzingGetFiles
   | FuzzingGetFilesSuccess
   | FuzzingGetFileDetails

@@ -1,0 +1,18 @@
+<div class="mina-table flex-grow overflow-x-auto">
+  <div class="row head pr-12">
+    <span *ngFor="let th of tableHeads; let i=index">
+      {{ th.name }}
+    </span>
+  </div>
+  <cdk-virtual-scroll-viewport class="border-bottom border-top overflow-y-scroll h-minus-lg"
+                               [itemSize]="itemSize">
+    <div *cdkVirtualFor="let dir of directories; let i=index"
+         (click)="selectDirectory(dir)"
+         [class.active]="activeDirectory === dir"
+         class="row">
+      <span>
+        <mina-copy [value]="dir"></mina-copy>
+      </span>
+    </div>
+  </cdk-virtual-scroll-viewport>
+</div>

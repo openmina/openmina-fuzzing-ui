@@ -8,13 +8,15 @@ import { catchError, filter, map, repeat, switchMap } from 'rxjs';
 import { addError } from '@shared/constants/store-functions';
 import { MinaErrorType } from '@shared/types/error-preview/mina-error-type.enum';
 import {
+  FUZZING_GET_DIRECTORIES,
+  FUZZING_GET_DIRECTORIES_SUCCESS,
   FUZZING_GET_FILE_DETAILS,
   FUZZING_GET_FILE_DETAILS_SUCCESS,
   FUZZING_GET_FILES,
-  FUZZING_GET_FILES_SUCCESS,
+  FUZZING_GET_FILES_SUCCESS, FUZZING_SET_ACTIVE_DIRECTORY,
   FuzzingActions,
   FuzzingGetFileDetails,
-  FuzzingGetFiles,
+  FuzzingGetFiles, FuzzingSetActiveDirectory,
 } from '@fuzzing/fuzzing.actions';
 import { FuzzingService } from '@fuzzing/fuzzing.service';
 import { FuzzingFile } from '@shared/types/fuzzing/fuzzing-file.type';
@@ -25,6 +27,7 @@ import { FuzzingFileDetails } from '@shared/types/fuzzing/fuzzing-file-details.t
 })
 export class FuzzingEffects extends MinaBaseEffect<FuzzingActions> {
 
+  readonly getDirectories$: Effect;
   readonly getFiles$: Effect;
   readonly getFileDetails$: Effect;
 
@@ -34,13 +37,24 @@ export class FuzzingEffects extends MinaBaseEffect<FuzzingActions> {
 
     super(store, selectMinaState);
 
+    this.getDirectories$ = createEffect(() => this.actions$.pipe(
+      ofType(FUZZING_GET_DIRECTORIES),
+      switchMap(() => this.fuzzingService.getRootDirectoryContent()),
+      map((payload: string[]) => ({ type: FUZZING_GET_DIRECTORIES_SUCCESS, payload })),
+      catchError((error: Error) => [
+        addError(error, MinaErrorType.GENERIC),
+        { type: FUZZING_GET_DIRECTORIES_SUCCESS, payload: [] },
+      ]),
+      repeat(),
+    ));
+
     this.getFiles$ = createEffect(() => this.actions$.pipe(
-      ofType(FUZZING_GET_FILES),
-      this.latestActionState<FuzzingGetFiles>(),
-      switchMap(({ action }) => this.fuzzingService.getFiles(action.payload.urlType)),
+      ofType(FUZZING_GET_FILES, FUZZING_SET_ACTIVE_DIRECTORY),
+      this.latestActionState<FuzzingGetFiles | FuzzingSetActiveDirectory>(),
+      switchMap(({ state }) => this.fuzzingService.getFiles(state.fuzzing.activeDirectory, state.fuzzing.urlType)),
       map((payload: FuzzingFile[]) => ({ type: FUZZING_GET_FILES_SUCCESS, payload })),
       catchError((error: Error) => [
-        addError(error, MinaErrorType.GRAPH_QL),
+        addError(error, MinaErrorType.GENERIC),
         { type: FUZZING_GET_FILES_SUCCESS, payload: [] },
       ]),
       repeat(),
@@ -50,8 +64,12 @@ export class FuzzingEffects extends MinaBaseEffect<FuzzingActions> {
       ofType(FUZZING_GET_FILE_DETAILS),
       this.latestActionState<FuzzingGetFileDetails>(),
       filter(({ action }) => !!action.payload),
-      switchMap(({ action }) => this.fuzzingService.getFileDetails(action.payload.name)),
+      switchMap(({ action, state }) => this.fuzzingService.getFileDetails(state.fuzzing.activeDirectory, action.payload.name)),
       map((payload: FuzzingFileDetails) => ({ type: FUZZING_GET_FILE_DETAILS_SUCCESS, payload })),
+      catchError((error: Error) => [
+        addError(error, MinaErrorType.GENERIC),
+        { type: FUZZING_GET_FILE_DETAILS_SUCCESS, payload: { lines: [], executedLines: 0, filename: '' } as FuzzingFileDetails },
+      ]),
     ));
   }
 }

@@ -9,9 +9,16 @@ const routes: Routes = [
     component: FuzzingComponent,
     children: [
       {
-        path: ':file',
+        path: ':dir',
         component: FuzzingComponent,
         title: FUZZING_TITLE,
+        children: [
+          {
+            path: ':file',
+            component: FuzzingComponent,
+            title: FUZZING_TITLE,
+          },
+        ],
       },
     ],
   },
@@ -20,9 +27,16 @@ const routes: Routes = [
     component: FuzzingComponent,
     children: [
       {
-        path: ':file',
+        path: ':dir',
         component: FuzzingComponent,
         title: FUZZING_TITLE,
+        children: [
+          {
+            path: ':file',
+            component: FuzzingComponent,
+            title: FUZZING_TITLE,
+          },
+        ],
       },
     ],
   },
