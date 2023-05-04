@@ -10,8 +10,9 @@
          (click)="selectDirectory(dir)"
          [class.active]="activeDirectory === dir"
          class="row">
-      <span>
-        <mina-copy [value]="dir"></mina-copy>
+      <span>{{ dir.date }}</span>
+      <span class="tertiary truncate">
+        <mina-copy [value]="dir.fullName" [display]="dir.name"></mina-copy>
       </span>
     </div>
   </cdk-virtual-scroll-viewport>

@@ -3,10 +3,11 @@ import { MinaState } from '@app/app.setup';
 import { FuzzingFile } from '@shared/types/fuzzing/fuzzing-file.type';
 import { FuzzingFileDetails } from '@shared/types/fuzzing/fuzzing-file-details.type';
 import { TableSort } from '@shared/types/shared/table-sort.type';
+import { FuzzingDirectory } from '@shared/types/fuzzing/fuzzing-directory.type';
 
 export interface FuzzingState {
-  directories: string[];
-  activeDirectory: string;
+  directories: FuzzingDirectory[];
+  activeDirectory: FuzzingDirectory;
   files: FuzzingFile[];
   filteredFiles: FuzzingFile[];
   activeFile: FuzzingFile;
@@ -22,8 +23,8 @@ const select = <T>(selector: (state: FuzzingState) => T): MemoizedSelector<MinaS
 );
 
 export const selectFuzzingState = createFeatureSelector<FuzzingState>('fuzzing');
-export const selectFuzzingDirectories = select((state: FuzzingState): string[] => state.directories);
-export const selectFuzzingActiveDirectory = select((state: FuzzingState): string => state.activeDirectory);
+export const selectFuzzingDirectories = select((state: FuzzingState): FuzzingDirectory[] => state.directories);
+export const selectFuzzingActiveDirectory = select((state: FuzzingState): FuzzingDirectory => state.activeDirectory);
 export const selectFuzzingFiles = select((state: FuzzingState): FuzzingFile[] => state.filteredFiles);
 export const selectFuzzingActiveFile = select((state: FuzzingState): FuzzingFile => state.activeFile);
 export const selectFuzzingActiveFileDetails = select((state: FuzzingState): FuzzingFileDetails => state.activeFileDetails);

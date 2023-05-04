@@ -21,6 +21,7 @@ import {
 import { FuzzingService } from '@fuzzing/fuzzing.service';
 import { FuzzingFile } from '@shared/types/fuzzing/fuzzing-file.type';
 import { FuzzingFileDetails } from '@shared/types/fuzzing/fuzzing-file-details.type';
+import { FuzzingDirectory } from '@shared/types/fuzzing/fuzzing-directory.type';
 
 @Injectable({
   providedIn: 'root',
@@ -40,7 +41,7 @@ export class FuzzingEffects extends MinaBaseEffect<FuzzingActions> {
     this.getDirectories$ = createEffect(() => this.actions$.pipe(
       ofType(FUZZING_GET_DIRECTORIES),
       switchMap(() => this.fuzzingService.getRootDirectoryContent()),
-      map((payload: string[]) => ({ type: FUZZING_GET_DIRECTORIES_SUCCESS, payload })),
+      map((payload: FuzzingDirectory[]) => ({ type: FUZZING_GET_DIRECTORIES_SUCCESS, payload })),
       catchError((error: Error) => [
         addError(error, MinaErrorType.GENERIC),
         { type: FUZZING_GET_DIRECTORIES_SUCCESS, payload: [] },
@@ -51,7 +52,7 @@ export class FuzzingEffects extends MinaBaseEffect<FuzzingActions> {
     this.getFiles$ = createEffect(() => this.actions$.pipe(
       ofType(FUZZING_GET_FILES, FUZZING_SET_ACTIVE_DIRECTORY),
       this.latestActionState<FuzzingGetFiles | FuzzingSetActiveDirectory>(),
-      switchMap(({ state }) => this.fuzzingService.getFiles(state.fuzzing.activeDirectory, state.fuzzing.urlType)),
+      switchMap(({ state }) => this.fuzzingService.getFiles(state.fuzzing.activeDirectory.fullName, state.fuzzing.urlType)),
       map((payload: FuzzingFile[]) => ({ type: FUZZING_GET_FILES_SUCCESS, payload })),
       catchError((error: Error) => [
         addError(error, MinaErrorType.GENERIC),
@@ -64,12 +65,13 @@ export class FuzzingEffects extends MinaBaseEffect<FuzzingActions> {
       ofType(FUZZING_GET_FILE_DETAILS),
       this.latestActionState<FuzzingGetFileDetails>(),
       filter(({ action }) => !!action.payload),
-      switchMap(({ action, state }) => this.fuzzingService.getFileDetails(state.fuzzing.activeDirectory, action.payload.name)),
+      switchMap(({ action, state }) => this.fuzzingService.getFileDetails(state.fuzzing.activeDirectory.fullName, action.payload.name)),
       map((payload: FuzzingFileDetails) => ({ type: FUZZING_GET_FILE_DETAILS_SUCCESS, payload })),
       catchError((error: Error) => [
         addError(error, MinaErrorType.GENERIC),
         { type: FUZZING_GET_FILE_DETAILS_SUCCESS, payload: { lines: [], executedLines: 0, filename: '' } as FuzzingFileDetails },
       ]),
+      repeat(),
     ));
   }
 }

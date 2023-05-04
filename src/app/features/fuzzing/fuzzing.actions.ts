@@ -2,6 +2,7 @@ import { FeatureAction } from '@shared/types/store/feature-action.type';
 import { FuzzingFile } from '@shared/types/fuzzing/fuzzing-file.type';
 import { FuzzingFileDetails } from '@shared/types/fuzzing/fuzzing-file-details.type';
 import { TableSort } from '@shared/types/shared/table-sort.type';
+import { FuzzingDirectory } from '@shared/types/fuzzing/fuzzing-directory.type';
 
 enum FuzzingActionTypes {
   FUZZING_INIT = 'FUZZING_INIT',
@@ -50,13 +51,13 @@ export class FuzzingGetDirectories implements FuzzingAction {
 export class FuzzingGetDirectoriesSuccess implements FuzzingAction {
   readonly type = FUZZING_GET_DIRECTORIES_SUCCESS;
 
-  constructor(public payload: string[]) { }
+  constructor(public payload: FuzzingDirectory[]) { }
 }
 
 export class FuzzingSetActiveDirectory implements FuzzingAction {
   readonly type = FUZZING_SET_ACTIVE_DIRECTORY;
 
-  constructor(public payload: string) { }
+  constructor(public payload: FuzzingDirectory) { }
 }
 
 export class FuzzingGetFiles implements FuzzingAction {

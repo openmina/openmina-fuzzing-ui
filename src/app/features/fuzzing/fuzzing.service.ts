@@ -5,17 +5,40 @@ import { HttpClient } from '@angular/common/http';
 import { FuzzingFileDetails } from '@shared/types/fuzzing/fuzzing-file-details.type';
 import { FuzzingLineCounter } from '@shared/types/fuzzing/fuzzing-line-counter.type';
 import { CONFIG } from '@shared/constants/config';
+import { FuzzingDirectory } from '@shared/types/fuzzing/fuzzing-directory.type';
+import { noMillisFormat, toReadableDate } from '@shared/helpers/date.helper';
 
 @Injectable({ providedIn: 'root' })
 export class FuzzingService {
 
   constructor(private http: HttpClient) { }
 
-  getRootDirectoryContent(): Observable<string[]> {
+  getRootDirectoryContent(): Observable<FuzzingDirectory[]> {//
     if (CONFIG.server.includes(origin)) {
-      return of(['reports']).pipe(delay(100));
+      return of([{ fullName: 'reports', name: 'reports', date: '-', dateNumber: 0 }]).pipe(delay(50));
     }
-    return this.http.get<string[]>(`${CONFIG.server}?path=${encodeURIComponent(CONFIG.parentDirectoryAbsolutePath)}`).pipe(delay(100));
+    return this.http.get<string[]>(`${CONFIG.server}?path=${encodeURIComponent(CONFIG.parentDirectoryAbsolutePath)}`).pipe(
+      delay(50),
+      map((directories: string[]) => directories.map((directory: string) => {
+        let date: string;
+        let dateNumber: number;
+
+        try {
+          date = toReadableDate(directory.split('_')[0], noMillisFormat);
+          dateNumber = new Date(date).getTime();
+        } catch (e) {
+          date = '-';
+          dateNumber = 0;
+        }
+        return {
+          fullName: directory,
+          name: directory.includes('_') ? directory.split('_').slice(1).join('_') : directory,
+          date,
+          dateNumber,
+        };
+      })),
+      map((directories: FuzzingDirectory[]) => directories.sort((a: FuzzingDirectory, b: FuzzingDirectory) => b.dateNumber - a.dateNumber)),
+    );
   }
 
   getFiles(activeDir: string, type: 'ocaml' | 'rust'): Observable<FuzzingFile[]> {

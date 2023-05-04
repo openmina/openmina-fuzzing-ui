@@ -18,6 +18,7 @@ import { getMergedRoute } from '@shared/router/router-state.selectors';
 import { MergedRoute } from '@shared/router/merged-route';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { untilDestroyed } from '@ngneat/until-destroy';
+import { FuzzingDirectory } from '@shared/types/fuzzing/fuzzing-directory.type';
 
 @Component({
   selector: 'mina-fuzzing-files-table',
@@ -42,7 +43,7 @@ export class FuzzingFilesTableComponent extends StoreDispatcher implements OnIni
   @ViewChild(CdkVirtualScrollViewport, { static: true }) private scrollViewport: CdkVirtualScrollViewport;
   private pathFromRoute: string;
   private urlType: string;
-  private activeDirectory: string;
+  private activeDirectory: FuzzingDirectory;
 
   constructor(private router: Router) { super(); }
 
@@ -102,7 +103,7 @@ export class FuzzingFilesTableComponent extends StoreDispatcher implements OnIni
   }
 
   private listenToActiveDirectory(): void {
-    this.select(selectFuzzingActiveDirectory, (directory: string) => {
+    this.select(selectFuzzingActiveDirectory, (directory: FuzzingDirectory) => {
       this.activeDirectory = directory;
     }, filter(directory => this.activeDirectory !== directory));
   }
@@ -135,6 +136,6 @@ export class FuzzingFilesTableComponent extends StoreDispatcher implements OnIni
       this.activeFile = file;
       this.dispatch(FuzzingGetFileDetails, file);
     }
-    this.router.navigate([Routes.FUZZING, this.urlType, this.activeDirectory, file.path]);
+    this.router.navigate([Routes.FUZZING, this.urlType, this.activeDirectory.fullName, file.path]);
   }
 }

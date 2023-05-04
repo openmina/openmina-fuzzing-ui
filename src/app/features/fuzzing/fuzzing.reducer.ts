@@ -44,7 +44,7 @@ export function reducer(state: FuzzingState = initialState, action: FuzzingActio
     }
 
     case FUZZING_SET_ACTIVE_DIRECTORY: {
-      if (action.payload === state.activeDirectory) {
+      if (action.payload.fullName === state.activeDirectory?.fullName) {
         return state;
       }
       return {
