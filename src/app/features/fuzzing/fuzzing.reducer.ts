@@ -34,6 +34,9 @@ export function reducer(state: FuzzingState = initialState, action: FuzzingActio
   switch (action.type) {
 
     case FUZZING_GET_DIRECTORIES_SUCCESS: {
+      if (JSON.stringify(action.payload) === JSON.stringify(state.directories)) {
+        return state;
+      }
       return {
         ...state,
         directories: action.payload,
@@ -41,6 +44,9 @@ export function reducer(state: FuzzingState = initialState, action: FuzzingActio
     }
 
     case FUZZING_SET_ACTIVE_DIRECTORY: {
+      if (action.payload === state.activeDirectory) {
+        return state;
+      }
       return {
         ...state,
         activeDirectory: action.payload,
@@ -64,7 +70,7 @@ export function reducer(state: FuzzingState = initialState, action: FuzzingActio
       return {
         ...state,
         files,
-        filteredFiles: state.filterText ? files.filter(file => file.path.includes(state.filterText)) : files,
+        filteredFiles: state.filterText ? files.filter(file => file.path.toLowerCase().includes(state.filterText.toLowerCase())) : files,
       };
     }
 
@@ -95,7 +101,7 @@ export function reducer(state: FuzzingState = initialState, action: FuzzingActio
     }
 
     case FUZZING_FILTER: {
-      const filteredFiles = !action.payload ? sortFiles(state.files, state.sort) : state.files.filter(file => file.path.includes(action.payload));
+      const filteredFiles = sortFiles(!action.payload ? state.files : state.files.filter(file => file.path.includes(action.payload)), state.sort);
       return {
         ...state,
         filterText: action.payload,
@@ -112,5 +118,5 @@ export function reducer(state: FuzzingState = initialState, action: FuzzingActio
 }
 
 function sortFiles(files: FuzzingFile[], tableSort: TableSort<FuzzingFile>): FuzzingFile[] {
-  return sort(files, tableSort, ['path']);
+  return sort<FuzzingFile>(files, tableSort, ['path']);
 }

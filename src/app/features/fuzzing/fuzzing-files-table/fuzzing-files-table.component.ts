@@ -80,7 +80,7 @@ export class FuzzingFilesTableComponent extends StoreDispatcher implements OnIni
   private listenToFiles(): void {
     this.select(selectFuzzingFiles, (files: FuzzingFile[]) => {
       this.files = files;
-      if (this.pathFromRoute) {
+      if (files.length > 0 && this.pathFromRoute) {
         const payload = files.find(file => file.path === this.pathFromRoute);
         if (payload) {
           this.dispatch(FuzzingGetFileDetails, payload);
