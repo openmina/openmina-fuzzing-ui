@@ -37,7 +37,7 @@ The application is available at [http://1.k8.openmina.com:31308](http://1.k8.ope
    This command will install all the required dependencies for the project based on the package.json file.
 5. Configure the location of the fuzzing files:
    * Open the `src/environments/environment.ts` file in a text editor.
-   * Change the `filesAbsolutePath` value to the location of the fuzzing files on your computer.
+   * Change the `parentDirectoryAbsolutePath` value to the location of the fuzzing directories on your computer.
    * Save the file.
 6. **Serve the project:** Finally, run the following command to serve the project:
    `npm run start`
