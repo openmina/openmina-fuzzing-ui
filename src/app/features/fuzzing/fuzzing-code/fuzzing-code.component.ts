@@ -90,7 +90,7 @@ export class FuzzingCodeComponent extends StoreDispatcher implements OnInit, Aft
     fromEvent(this.codeContainer.nativeElement, 'mousemove').pipe(
       untilDestroyed(this),
       tap(() => MinaTooltipDirective.hideTooltip(this.popup)),
-      debounceTime(400),
+      debounceTime(200),
     ).subscribe((ev: Event) => {
       const target = ev.target as HTMLSpanElement;
       if (target.hasAttribute('h')) {

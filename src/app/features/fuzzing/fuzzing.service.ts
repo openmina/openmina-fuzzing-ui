@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { delay, map, Observable } from 'rxjs';
+import { delay, map, Observable, of } from 'rxjs';
 import { FuzzingFile } from '@shared/types/fuzzing/fuzzing-file.type';
 import { HttpClient } from '@angular/common/http';
 import { FuzzingFileDetails } from '@shared/types/fuzzing/fuzzing-file-details.type';
@@ -12,6 +12,9 @@ export class FuzzingService {
   constructor(private http: HttpClient) { }
 
   getRootDirectoryContent(): Observable<string[]> {
+    if (CONFIG.server.includes(origin)) {
+      return of(['reports']).pipe(delay(100));
+    }
     return this.http.get<string[]>(`${CONFIG.server}?path=${CONFIG.parentDirectoryAbsolutePath}`).pipe(delay(100));
   }
 
