@@ -19,7 +19,7 @@ export class FuzzingService {
   }
 
   getFiles(activeDir: string, type: 'ocaml' | 'rust'): Observable<FuzzingFile[]> {
-    return this.http.get<any[]>(`${CONFIG.server}/${type}index.json?path=${CONFIG.parentDirectoryAbsolutePath}\\${activeDir}`).pipe(delay(100))
+    return this.http.get<any[]>(`${CONFIG.server}/${type}index.json?path=${CONFIG.parentDirectoryAbsolutePath}/${activeDir}`).pipe(delay(100))
       .pipe(
         map((files: any[]) => files.map((file: any) => ({
           name: file[0],
@@ -30,7 +30,7 @@ export class FuzzingService {
   }
 
   getFileDetails(activeDir: string, name: string): Observable<FuzzingFileDetails> {
-    return this.http.get<any>(`${CONFIG.server}/${name}?path=${CONFIG.parentDirectoryAbsolutePath}\\${activeDir}`).pipe(delay(100))
+    return this.http.get<any>(`${CONFIG.server}/${name}?path=${CONFIG.parentDirectoryAbsolutePath}/${activeDir}`).pipe(delay(100))
       .pipe(
         map((file: any) => ({
           filename: file.filename,
