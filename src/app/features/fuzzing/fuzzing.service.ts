@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { delay, map, Observable, of } from 'rxjs';
+import { delay, map, Observable } from 'rxjs';
 import { FuzzingFile } from '@shared/types/fuzzing/fuzzing-file.type';
 import { HttpClient } from '@angular/common/http';
 import { FuzzingFileDetails } from '@shared/types/fuzzing/fuzzing-file-details.type';
@@ -13,36 +13,43 @@ export class FuzzingService {
 
   constructor(private http: HttpClient) { }
 
-  getRootDirectoryContent(): Observable<FuzzingDirectory[]> {//
-    if (CONFIG.server.includes(origin)) {
-      return of([{ fullName: 'reports', name: 'reports', date: '-', dateNumber: 0 }]).pipe(delay(50));
-    }
-    return this.http.get<string[]>(`${CONFIG.server}?path=${encodeURIComponent(CONFIG.parentDirectoryAbsolutePath)}`).pipe(
+  getRootDirectoryContent(): Observable<FuzzingDirectory[]> {
+    const url = CONFIG.server.includes(origin)
+      ? 'assets/reports/index.json'
+      : `${CONFIG.server}?path=${encodeURIComponent(CONFIG.parentDirectoryAbsolutePath)}`;
+    return this.http.get<string[]>(url).pipe(
       delay(50),
-      map((directories: string[]) => directories.map((directory: string) => {
-        let date: string;
-        let dateNumber: number;
-
-        try {
-          date = toReadableDate(directory.split('_')[0], noMillisFormat);
-          dateNumber = new Date(date).getTime();
-        } catch (e) {
-          date = '-';
-          dateNumber = 0;
-        }
-        return {
-          fullName: directory,
-          name: directory.includes('_') ? directory.split('_').slice(1).join('_') : directory,
-          date,
-          dateNumber,
-        };
-      })),
-      map((directories: FuzzingDirectory[]) => directories.sort((a: FuzzingDirectory, b: FuzzingDirectory) => b.dateNumber - a.dateNumber)),
+      map((dirNames: string[]) => this.mapGetDirectoryNamesResponse(dirNames)),
     );
   }
 
+  private mapGetDirectoryNamesResponse(dirNames: string[]): FuzzingDirectory[] {
+    const directories = dirNames.map((directory: string) => {
+      let date: string;
+      let dateNumber: number;
+
+      try {
+        date = toReadableDate(directory.split('_')[0], noMillisFormat);
+        dateNumber = new Date(date).getTime();
+      } catch (e) {
+        date = '-';
+        dateNumber = 0;
+      }
+      return {
+        fullName: directory,
+        name: directory.includes('_') ? directory.split('_').slice(1).join('_') : directory,
+        date,
+        dateNumber,
+      };
+    });
+    return directories.sort((a: FuzzingDirectory, b: FuzzingDirectory) => b.dateNumber - a.dateNumber);
+  }
+
   getFiles(activeDir: string, type: 'ocaml' | 'rust'): Observable<FuzzingFile[]> {
-    return this.http.get<any[]>(`${CONFIG.server}/${type}index.json?path=${encodeURIComponent(CONFIG.parentDirectoryAbsolutePath + '/' + activeDir)}`).pipe(delay(100))
+    const url = CONFIG.server.includes(origin)
+      ? `assets/reports/${activeDir}/${type}index.json`
+      : `${CONFIG.server}/${type}index.json?path=${encodeURIComponent(CONFIG.parentDirectoryAbsolutePath + '/' + activeDir)}`;
+    return this.http.get<any[]>(url).pipe(delay(100))
       .pipe(
         map((files: any[]) => files.map((file: any) => ({
           name: file[0],
@@ -53,7 +60,10 @@ export class FuzzingService {
   }
 
   getFileDetails(activeDir: string, name: string): Observable<FuzzingFileDetails> {
-    return this.http.get<any>(`${CONFIG.server}/${name}?path=${encodeURIComponent(CONFIG.parentDirectoryAbsolutePath + '/' + activeDir)}`).pipe(delay(100))
+    const url = CONFIG.server.includes(origin)
+      ? `assets/reports/${activeDir}/${name}`
+      : `${CONFIG.server}/${name}?path=${encodeURIComponent(CONFIG.parentDirectoryAbsolutePath + '/' + activeDir)}`;
+    return this.http.get<any>(url).pipe(delay(100))
       .pipe(
         map((file: any) => ({
           filename: file.filename,
