@@ -1,7 +1,10 @@
 <div class="toolbar h-100 flex-row flex-stretch align-stretch w-100 p-relative pl-12">
   <div class="flex-row align-center flex-grow">
-    <img src="assets/images/logo/Logo.svg" alt="" width="28" [style.margin-right.px]="2">
-    <span class="f-600 f-big pr-12">{{ title }}</span>
+    <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" clip-rule="evenodd" fill="var(--base-primary)" fill-opacity="0.8"
+            d="M13.8408 0.0415039H0V13.8823H2.07611V15.9584H15.9169V2.11762H13.8408V0.0415039ZM13.8408 2.11762H2.07611V13.8823H13.8408V2.11762Z"/>
+    </svg>
+    <span class="f-600 f-big pr-12 ml-10">{{ title }}</span>
     <mina-submenu-tabs *ngIf="!isMobile" class="pl-12"></mina-submenu-tabs>
   </div>
   <div class="flex-row flex-end align-center">
